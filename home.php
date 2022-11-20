@@ -118,23 +118,33 @@ foreach ($friendIDs as $ID) {
         </section>
         <!-- FEED SECTION -->
         <section>
-            <div class="card">
-                <div class="card-body">
-                    <p class="card-text">Nullam id dolor id nibh ultricies vehicula ut id elit. </p>
-                    <img style="width: 100%;height: 300px;" />
-                    <div class="d-flex" style="margin-top: 20px;">
-                        <button class="btn btn-primary d-xl-flex justify-content-xl-center align-items-xl-center" type="button" style="width: -0;height: 0;margin-right: 12px;">
-                            <i class="far fa-thumbs-up"></i><span style="margin-left: 5px;">0</span>
-                        </button>
-                        <button class="btn btn-primary d-xl-flex justify-content-xl-center align-items-xl-center" type="button" style="width: -0;height: 0;">
-                            <i class="far fa-comment-alt"></i><span style="margin-left: 5px;">0</span>
-                        </button>
+            <?php foreach ($posts as $post) : ?>
+                <?php
+                if (empty($post)) continue;
+                foreach ($post as $p) :
+                ?>
+                    <div class="card mb-5">
+                        <div class="card-body">
+                            <p class="card-text">
+                                <?= $p->postTextContent == 'noPostTextContent' ? '' : $p->postTextContent
+                                ?>
+                            </p>
+                            <?= $p->postPhotoUrl == 'none' ? '' : "<img src='$p->postPhotoUrl' style='width: 100%;height: 500px;' />" ?>
+                            <div class="d-flex" style="margin-top: 20px;">
+                                <button class="btn btn-primary d-xl-flex justify-content-xl-center align-items-xl-center" type="button" style="width: -0;height: 0;margin-right: 12px;" onclick="handleLike(this, <?= $p->postID ?>)">
+                                    <i class="far fa-thumbs-up"></i><span style="margin-left: 5px;" id="<?= $p->postID ?>"><?= $p->likesCount ?></span>
+                                </button>
+                                <button class="btn btn-primary d-xl-flex justify-content-xl-center align-items-xl-center" type="button" style="width: -0;height: 0;">
+                                    <i class="far fa-comment-alt"></i><span style="margin-left: 5px;"><?= $p->commentsCount ?></span>
+                                </button>
+                            </div>
+                            <div style="margin-top: 24px;display:none">
+                                <form><input class="form-control" type="text" placeholder="Comment..." /></form>
+                            </div>
+                        </div>
                     </div>
-                    <div style="margin-top: 24px;">
-                        <form><input class="form-control" type="text" placeholder="Comment..." /></form>
-                    </div>
-                </div>
-            </div>
+            <?php endforeach;
+            endforeach; ?>
         </section>
     </main>
 
@@ -142,6 +152,20 @@ foreach ($friendIDs as $ID) {
     <script src="assets/js/bs-init.js"></script>
     <script>
         <?= isset($post_error) ? "alert('$post_error')" : "" ?>
+
+        function handleLike(button, postID) {
+            button.setAttribute('onclick', 'handleUnlike(this, <?= $p->postID ?>)')
+            // var xhttp = new XMLHttpRequest();
+            // xhttp.open("GET", `./handleLike.php?postID=${postID}`, true);
+            // xhttp.send();
+        }
+
+        function handleUnlike(button, postID) {
+            button.setAttribute('onclick', 'handleLike(this, <?= $p->postID ?>)')
+            // var xhttp = new XMLHttpRequest();
+            // xhttp.open("GET", `./handleUnlike.php?postID=${postID}`, true);
+            // xhttp.send();
+        }
     </script>
 </body>
 
