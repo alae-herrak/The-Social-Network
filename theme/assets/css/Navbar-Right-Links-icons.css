@@ -55,3 +55,23 @@
   border-radius: 50%;
 }
 
+@media (min-width: 992px) {
+  section {
+    padding-right: 150px;
+    padding-left: 150px;
+  }
+}
+
+@media (min-width: 1400px) {
+  section {
+    padding-right: 300px;
+    padding-left: 300px;
+  }
+}
+
+@media (min-width: 768px) {
+  section {
+    margin-top: 50px;
+  }
+}
+

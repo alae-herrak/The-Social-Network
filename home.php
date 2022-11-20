@@ -49,15 +49,15 @@ foreach ($result2 as $result) {
 }
 
 //include the current user in the friends to show his own posts
-array_push($friendIDs,$_SESSION['userID']);
+array_push($friendIDs, $_SESSION['userID']);
 
 // get the posts posted by the IDs in the $friends array
 $posts = [];
 $stmt = $db->prepare('SELECT * FROM post WHERE postUserID = ?');
-foreach($friendIDs as $ID){
+foreach ($friendIDs as $ID) {
     $stmt->execute([$ID]);
     $post = $stmt->fetchAll(PDO::FETCH_OBJ);
-    array_push($posts,$post);
+    array_push($posts, $post);
 }
 
 
@@ -71,6 +71,7 @@ foreach($friendIDs as $ID){
     <title>TSN | Home</title>
     <link rel="stylesheet" href="assets/bootstrap/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&amp;display=swap">
+    <link rel="stylesheet" href="assets/fonts/fontawesome-all.min.css">
     <link rel="stylesheet" href="assets/css/Navbar-Right-Links-icons.css">
 </head>
 
@@ -98,6 +99,8 @@ foreach($friendIDs as $ID){
     </nav>
 
     <main style="background: var(--bs-gray-100);padding: 1% 20%;">
+
+        <!-- NEW POST FORM -->
         <section id="New-Post" style="margin: 0px;">
             <form action="" method="post" enctype="multipart/form-data">
                 <input type="hidden" name="MAX_FILE_SIZE" value="3145728" />
@@ -112,6 +115,26 @@ foreach($friendIDs as $ID){
                     <button class="btn btn-primary btn-sm" type="submit" name='post' style="padding-right: 13px;padding-left: 13px;">Post</button>
                 </div>
             </form>
+        </section>
+        <!-- FEED SECTION -->
+        <section>
+            <div class="card">
+                <div class="card-body">
+                    <p class="card-text">Nullam id dolor id nibh ultricies vehicula ut id elit. </p>
+                    <img style="width: 100%;height: 300px;" />
+                    <div class="d-flex" style="margin-top: 20px;">
+                        <button class="btn btn-primary d-xl-flex justify-content-xl-center align-items-xl-center" type="button" style="width: -0;height: 0;margin-right: 12px;">
+                            <i class="far fa-thumbs-up"></i><span style="margin-left: 5px;">0</span>
+                        </button>
+                        <button class="btn btn-primary d-xl-flex justify-content-xl-center align-items-xl-center" type="button" style="width: -0;height: 0;">
+                            <i class="far fa-comment-alt"></i><span style="margin-left: 5px;">0</span>
+                        </button>
+                    </div>
+                    <div style="margin-top: 24px;">
+                        <form><input class="form-control" type="text" placeholder="Comment..." /></form>
+                    </div>
+                </div>
+            </div>
         </section>
     </main>
 
