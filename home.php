@@ -32,6 +32,35 @@ if (isset($_POST['post'])) {
         if ($flag) header('location: ./home.php');
     }
 }
+
+// get the IDs of fiends
+$stmt = $db->prepare('SELECT * FROM friends WHERE userID1 = ?');
+$stmt->execute([$_SESSION['userID']]);
+$result1 = $stmt->fetchAll(PDO::FETCH_OBJ);
+$stmt = $db->prepare('SELECT * FROM friends WHERE userID2 = ?');
+$stmt->execute([$_SESSION['userID']]);
+$result2 = $stmt->fetchAll(PDO::FETCH_OBJ);
+$friendIDs = [];
+foreach ($result1 as $result) {
+    array_push($friendIDs, $result->userID2);
+}
+foreach ($result2 as $result) {
+    array_push($friendIDs, $result->userID1);
+}
+
+//include the current user in the friends to show his own posts
+array_push($friendIDs,$_SESSION['userID']);
+
+// get the posts posted by the IDs in the $friends array
+$posts = [];
+$stmt = $db->prepare('SELECT * FROM post WHERE postUserID = ?');
+foreach($friendIDs as $ID){
+    $stmt->execute([$ID]);
+    $post = $stmt->fetchAll(PDO::FETCH_OBJ);
+    array_push($posts,$post);
+}
+var_dump($posts);
+
 ?>
 <!DOCTYPE html>
 <html lang="en">
