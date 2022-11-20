@@ -59,7 +59,7 @@ foreach($friendIDs as $ID){
     $post = $stmt->fetchAll(PDO::FETCH_OBJ);
     array_push($posts,$post);
 }
-var_dump($posts);
+
 
 ?>
 <!DOCTYPE html>
