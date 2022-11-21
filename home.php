@@ -59,7 +59,14 @@ foreach ($friendIDs as $ID) {
     $post = $stmt->fetchAll(PDO::FETCH_OBJ);
     array_push($posts, $post);
 }
-
+//getting the likes of the current user
+$stmt = $db->prepare('SELECT * FROM likes WHERE userID = ?');
+$stmt->execute([$_SESSION['userID']]);
+$likes = $stmt->fetchAll(PDO::FETCH_OBJ);
+$postIDsLiked = [];
+foreach ($likes as $like) {
+    array_push($postIDsLiked, $like->postID);
+}
 
 ?>
 <!DOCTYPE html>
@@ -126,6 +133,8 @@ foreach ($friendIDs as $ID) {
                     $stmt = $db->prepare('SELECT * FROM users WHERE userID = ?');
                     $stmt->execute([$p->postUserID]);
                     $postUser = $stmt->fetch(PDO::FETCH_OBJ);
+                    // checking if user liked a post to disable the like and enable unlike
+                    $hasLiked = array_search($p->postID, $postIDsLiked, false);
                 ?>
                     <div class="card mb-5">
                         <div class="card-body">
@@ -139,8 +148,8 @@ foreach ($friendIDs as $ID) {
                             </p>
                             <?= $p->postPhotoUrl == 'none' ? '' : "<img src='$p->postPhotoUrl' style='width: 100%;height: 500px;' />" ?>
                             <div class="d-flex" style="margin-top: 20px;">
-                                <button class="btn btn-primary d-xl-flex justify-content-xl-center align-items-xl-center" type="button" style="width: -0;height: 0;margin-right: 12px;" onclick="handleLike(this, <?= $p->postID ?>)">
-                                    <i class="far fa-thumbs-up"></i><span style="margin-left: 5px;" id="<?= $p->postID ?>"><?= $p->likesCount ?></span>
+                                <button class="btn btn-primary d-xl-flex justify-content-xl-center align-items-xl-center" type="button" style="width: -0;height: 0;margin-right: 12px;<?= $hasLiked !== false ? 'background: var(--bs-blue);color: var(--bs-card-bg);' : '' ?>" \ onclick="<?= $hasLiked !== false ? 'handleUnlike' : 'handleLike' ?>(this, <?= $p->postID ?>)">
+                                    <i class="far fa-thumbs-up"></i><span style="margin-left: 5px;" id="post<?= $p->postID ?>"><?= $p->likesCount ?></span>
                                 </button>
                                 <button class="btn btn-primary d-xl-flex justify-content-xl-center align-items-xl-center" type="button" style="width: -0;height: 0;">
                                     <i class="far fa-comment-alt"></i><span style="margin-left: 5px;"><?= $p->commentsCount ?></span>
@@ -162,17 +171,23 @@ foreach ($friendIDs as $ID) {
         <?= isset($post_error) ? "alert('$post_error')" : "" ?>
 
         function handleLike(button, postID) {
-            button.setAttribute('onclick', 'handleUnlike(this, <?= $p->postID ?>)')
-            // var xhttp = new XMLHttpRequest();
-            // xhttp.open("GET", `./handleLike.php?postID=${postID}`, true);
-            // xhttp.send();
+            button.setAttribute('onclick', `handleUnlike(this, ${postID})`)
+            var xhttp = new XMLHttpRequest();
+            xhttp.open("GET", `./handleLike.php?postID=${postID}`, true);
+            xhttp.send();
+            let likeSpan = parseInt(document.querySelector(`#post${postID}`).innerHTML)
+            document.querySelector(`#post${postID}`).innerHTML = `${likeSpan + 1}`
+            button.setAttribute('style', "width: -0;height: 0;margin-right: 12px;background: var(--bs-blue);color: var(--bs-card-bg);")
         }
 
         function handleUnlike(button, postID) {
-            button.setAttribute('onclick', 'handleLike(this, <?= $p->postID ?>)')
-            // var xhttp = new XMLHttpRequest();
-            // xhttp.open("GET", `./handleUnlike.php?postID=${postID}`, true);
-            // xhttp.send();
+            button.setAttribute('onclick', `handleLike(this, ${postID})`)
+            var xhttp = new XMLHttpRequest();
+            xhttp.open("GET", `./handleUnlike.php?postID=${postID}`, true);
+            xhttp.send();
+            let likeSpan = document.querySelector(`#post${postID}`).innerHTML
+            document.querySelector(`#post${postID}`).innerHTML = `${likeSpan - 1}`
+            button.setAttribute('style', "width: -0;height: 0;margin-right: 12px;")
         }
     </script>
 </body>
