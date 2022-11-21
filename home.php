@@ -125,6 +125,10 @@ foreach ($friendIDs as $ID) {
                 ?>
                     <div class="card mb-5">
                         <div class="card-body">
+                            <div class="d-flex flex-row justify-content-start align-items-center" style="margin-bottom: 19px;">
+                                <img style="width: 30px;height: 30px;border-radius: 50%;" />
+                                <span style="margin-left: 11px;">Text</span>
+                            </div>
                             <p class="card-text">
                                 <?= $p->postTextContent == 'noPostTextContent' ? '' : $p->postTextContent
                                 ?>
