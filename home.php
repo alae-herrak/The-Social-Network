@@ -59,6 +59,15 @@ foreach ($friendIDs as $ID) {
     $post = $stmt->fetchAll(PDO::FETCH_OBJ);
     array_push($posts, $post);
 }
+// sorting the posts
+$sorted_posts = [];
+foreach($posts as $post){
+    foreach($post as $p){
+        array_push($sorted_posts, $p);
+    }
+}
+rsort($sorted_posts);
+
 //getting the likes of the current user
 $stmt = $db->prepare('SELECT * FROM likes WHERE userID = ?');
 $stmt->execute([$_SESSION['userID']]);
@@ -125,16 +134,16 @@ foreach ($likes as $like) {
         </section>
         <!-- FEED SECTION -->
         <section>
-            <?php foreach ($posts as $post) : ?>
+            <?php foreach ($sorted_posts as $post) : ?>
                 <?php
                 if (empty($post)) continue;
-                foreach ($post as $p) :
+                // foreach ($post as $p) :
                     // getting the post user profile picture and name
                     $stmt = $db->prepare('SELECT * FROM users WHERE userID = ?');
-                    $stmt->execute([$p->postUserID]);
+                    $stmt->execute([$post->postUserID]);
                     $postUser = $stmt->fetch(PDO::FETCH_OBJ);
                     // checking if user liked a post to disable the like and enable unlike
-                    $hasLiked = array_search($p->postID, $postIDsLiked, false);
+                    $hasLiked = array_search($post->postID, $postIDsLiked, false);
                 ?>
                     <div class="card mb-5">
                         <div class="card-body">
@@ -143,16 +152,16 @@ foreach ($likes as $like) {
                                 <span style="margin-left: 11px;"><?= $postUser->fullname ?></span>
                             </div>
                             <p class="card-text">
-                                <?= $p->postTextContent == 'noPostTextContent' ? '' : $p->postTextContent
+                                <?= $post->postTextContent == 'noPostTextContent' ? '' : $post->postTextContent
                                 ?>
                             </p>
-                            <?= $p->postPhotoUrl == 'none' ? '' : "<img src='$p->postPhotoUrl' style='width: 100%;height: 500px;' />" ?>
+                            <?= $post->postPhotoUrl == 'none' ? '' : "<img src='$post->postPhotoUrl' style='width: 100%;height: 500px;' />" ?>
                             <div class="d-flex" style="margin-top: 20px;">
-                                <button class="btn btn-primary d-xl-flex justify-content-xl-center align-items-xl-center" type="button" style="width: -0;height: 0;margin-right: 12px;<?= $hasLiked !== false ? 'background: var(--bs-blue);color: var(--bs-card-bg);' : '' ?>" \ onclick="<?= $hasLiked !== false ? 'handleUnlike' : 'handleLike' ?>(this, <?= $p->postID ?>)">
-                                    <i class="far fa-thumbs-up"></i><span style="margin-left: 5px;" id="post<?= $p->postID ?>"><?= $p->likesCount ?></span>
+                                <button class="btn btn-primary d-xl-flex justify-content-xl-center align-items-xl-center" type="button" style="width: -0;height: 0;margin-right: 12px;<?= $hasLiked !== false ? 'background: var(--bs-blue);color: var(--bs-card-bg);' : '' ?>" \ onclick="<?= $hasLiked !== false ? 'handleUnlike' : 'handleLike' ?>(this, <?= $post->postID ?>)">
+                                    <i class="far fa-thumbs-up"></i><span style="margin-left: 5px;" id="post<?= $post->postID ?>"><?= $post->likesCount ?></span>
                                 </button>
                                 <button class="btn btn-primary d-xl-flex justify-content-xl-center align-items-xl-center" type="button" style="width: -0;height: 0;">
-                                    <i class="far fa-comment-alt"></i><span style="margin-left: 5px;"><?= $p->commentsCount ?></span>
+                                    <i class="far fa-comment-alt"></i><span style="margin-left: 5px;"><?= $post->commentsCount ?></span>
                                 </button>
                             </div>
                             <div style="margin-top: 24px;display:none">
@@ -161,7 +170,7 @@ foreach ($likes as $like) {
                         </div>
                     </div>
             <?php endforeach;
-            endforeach; ?>
+            // endforeach; ?>
         </section>
     </main>
 
